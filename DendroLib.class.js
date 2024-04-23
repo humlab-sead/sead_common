@@ -121,9 +121,11 @@ class DendroLib {
 
         physicalSampleIds.forEach(physicalSampleId => {
             let sampleDataObject = {
-                sampleName: "",
-                sampleTaken: "",
-                physicalSampleId: physicalSampleId,
+                id: physicalSampleId,
+                type: "dendro",
+                sample_name: "",
+                date_sampled: "",
+                physical_sample_id: physicalSampleId,
                 datasets: []
             }
 
@@ -136,7 +138,8 @@ class DendroLib {
                         value = intVal;
                     }
 
-                    sampleDataObject.sampleName = m2.sample;
+                    sampleDataObject.sample_name = m2.sample;
+                    sampleDataObject.date_sampled = m2.date_sampled;
 
                     sampleDataObject.datasets.push({
                         id: m2.dendro_lookup_id,
@@ -148,7 +151,6 @@ class DendroLib {
 
             datingRows.forEach(m2 => {
                 if(physicalSampleId == m2.physical_sample_id) {
-
                     sampleDataObject.datasets.push({
                         id: m2.dendro_lookup_id,
                         label: m2.date_type,
@@ -159,8 +161,12 @@ class DendroLib {
                             younger: m2.younger,
                             plus: m2.plus,
                             minus: m2.minus,
+                            dating_uncertainty: m2.dating_uncertainty_id,
                             error_uncertainty: m2.error_uncertainty,
-                            season: m2.season
+                            season_id: m2.season_id,
+                            season_type_id: m2.season_type_id,
+                            season_name: m2.season_name,
+                            dating_note: m2.dating_note
                         }
                     });
                 }
@@ -170,56 +176,6 @@ class DendroLib {
 
         });
 
-        /*
-        measurementRows.map(m => {
-
-            let sampleDataObject = {
-                sampleName: m.sample,
-                sampleTaken: "",
-                physicalSampleId: m.physical_sample_id,
-                datasets: []
-            }
-
-            measurementRows.forEach(m2 => {
-                if(m.physical_sample_id == m2.physical_sample_id) {
-                    //Convert value to an integer if possible, otherwise leave as string
-                    let value = m2.measurement_value;
-                    let intVal = parseInt(m2.measurement_value);
-                    if(!isNaN(intVal)) {
-                        value = intVal;
-                    }
-
-                    sampleDataObject.datasets.push({
-                        id: m2.dendro_lookup_id,
-                        label: m2.date_type,
-                        value: value
-                    });
-                }
-            })
-
-            datingRows.forEach(m2 => {
-                if(m.physical_sample_id == m2.physical_sample_id) {
-
-                    sampleDataObject.datasets.push({
-                        id: m2.dendro_lookup_id,
-                        label: m2.date_type,
-                        value: "complex",
-                        data: {
-                            age_type: m2.age_type,
-                            older: m2.older,
-                            younger: m2.younger,
-                            plus: m2.plus,
-                            minus: m2.minus,
-                            error_uncertainty: m2.error_uncertainty,
-                            season: m2.season
-                        }
-                    });
-                }
-            });
-            
-            sampleDataObjects.push(sampleDataObject);
-        });
-        */
 
         return sampleDataObjects;
     }
@@ -274,60 +230,7 @@ class DendroLib {
         return dataObjects;
     }
 
-    /*
-    getTableRowsAsObjects(contentItem) {
-        let sampleDataObjects = [];
-        for(let rowKey in contentItem.data.rows) {
-            let row = contentItem.data.rows[rowKey];
     
-            let sampleDataObject = {
-                sampleName: row[2].value,
-                sampleTaken: row[3].value,
-                datasets: []
-            };
-    
-            row.forEach(cell => {
-                if(cell.type == "subtable") {
-    
-                    let subTable = cell.value;
-                    
-                    subTable.rows.forEach(subTableRow => {
-                        let dataset = {
-                            id: null,
-                            label: null,
-                            value: null,
-                            data: null,
-                        };
-                        subTableRow.forEach(subTableCell => {
-                            if(subTableCell.role == "id") {
-                                dataset.id = subTableCell.value;
-                            }
-                            if(subTableCell.role == "label") {
-                                dataset.label = subTableCell.value;
-                            }
-                            if(subTableCell.role == "value") {
-                                dataset.value = subTableCell.value;
-                            }
-                            if(subTableCell.role == "data") {
-                                dataset.data = subTableCell.value;
-                                if(typeof dataset.data.date_type != "undefined") {
-                                    //This is a date type
-                                    dataset.label = dataset.data.date_type;
-                                    dataset.value = "complex";
-                                }
-                            }
-                        })
-    
-                        sampleDataObject.datasets.push(dataset);
-                    })
-                }
-            })
-            sampleDataObjects.push(sampleDataObject);
-        }
-        
-        return sampleDataObjects;
-    }
-    */
 
     getDendroMeasurementByName(name, sampleDataObject) {
         let dendroLookupId = null;
@@ -489,8 +392,8 @@ class DendroLib {
 
         let outerMostTreeRingDate = this.getDendroMeasurementByName("Outermost tree-ring date", dataGroup);
         
+        let outerMostTreeRingDateValue = null;
         if(outerMostTreeRingDate) {
-            let outerMostTreeRingDateValue = null;
             if(outerMostTreeRingDate.older) {
                 outerMostTreeRingDateValue = parseInt(outerMostTreeRingDate.older);
             }
@@ -674,8 +577,11 @@ class DendroLib {
     getSamplesWithinTimespan(sampleDataObjects, startYear, endYear) {
         let selected = sampleDataObjects.filter(sampleDataObject => {
 
-            let germinationYear = this.getOldestGerminationYear(sampleDataObject);
-            let fellingYear = this.getYoungestFellingYear(sampleDataObject);
+            //let germinationYear = this.getOldestGerminationYear(sampleDataObject);
+            //let fellingYear = this.getYoungestFellingYear(sampleDataObject);
+
+            let germinationYear = this.getYoungestGerminationYear(sampleDataObject);
+            let fellingYear = this.getOldestFellingYear(sampleDataObject);
             
             //Just a check if both of these values are usable, otherwise there's no point
             if(!germinationYear || !fellingYear) {
