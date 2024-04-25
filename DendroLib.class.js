@@ -412,7 +412,7 @@ class DendroLib {
                 result.warnings.push("The outermost tree-ring date has an uncertainty specified as: "+outerMostTreeRingDate.error_uncertainty);
             }
     
-            if(outerMostTreeRingDate && treeAge && parseInt(treeAge)) {
+            if(outerMostTreeRingDateValue && treeAge && parseInt(treeAge)) {
                 result.value = outerMostTreeRingDateValue - parseInt(treeAge);
                 result.formula = "Outermost tree-ring date - Tree age ≥";
                 result.reliability = 2;
@@ -439,8 +439,8 @@ class DendroLib {
             pithSource = "";
         }
 
-        if(outerMostTreeRingDate && parseInt(treeRings) && pithValue && pith.notes != "Measured width") {
-            result.value = outerMostTreeRingDate - parseInt(treeRings) - pithValue;
+        if(outerMostTreeRingDateValue && parseInt(treeRings) && pithValue && pith.notes != "Measured width") {
+            result.value = outerMostTreeRingDateValue - parseInt(treeRings) - pithValue;
             result.formula = "Outermost tree-ring date - Tree rings - Distance to pith"+pithSource;
             result.reliability = 3;
             result.warnings.push("There is no dendrochronological estimation of the youngest possible germination year, it was therefore calculated using: "+result.formula);
@@ -448,8 +448,8 @@ class DendroLib {
         }
 
 
-        if(outerMostTreeRingDate && parseInt(treeRings)) {
-            result.value = outerMostTreeRingDate - parseInt(treeRings);
+        if(outerMostTreeRingDateValue && parseInt(treeRings)) {
+            result.value = outerMostTreeRingDateValue - parseInt(treeRings);
             result.formula = "Outermost tree-ring date - Tree rings";
             result.reliability = 4;
             result.warnings.push("There is no dendrochronological estimation of the youngest possible germination year, it was therefore calculated using: "+result.formula);
