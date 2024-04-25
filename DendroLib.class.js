@@ -311,7 +311,7 @@ class DendroLib {
                 result.warnings.push("The outermost tree-ring date has an uncertainty specified as: "+outerMostTreeRingDate.error_uncertainty);
             }
     
-            if(outerMostTreeRingDate && treeAge) {
+            if(outerMostTreeRingDateValue && treeAge) {
                 result.value = outerMostTreeRingDateValue - treeAge;
                 result.formula = "Outermost tree-ring date - Tree age ≤";
                 result.reliability = 2;
