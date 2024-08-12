@@ -122,6 +122,7 @@ class DendroLib {
         physicalSampleIds.forEach(physicalSampleId => {
             let sampleDataObject = {
                 id: physicalSampleId,
+                method_id: 10,
                 type: "dendro",
                 sample_name: "",
                 date_sampled: "",
