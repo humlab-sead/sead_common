@@ -112,8 +112,10 @@ class DendroLib {
 
         //Find unique samples
         let physicalSampleIds = [];
+        let biblioIds = new Set();
         measurementRows.forEach(row => {
             physicalSampleIds.push(row.physical_sample_id);
+            biblioIds.add(row.biblio_id);
         });
         physicalSampleIds = physicalSampleIds.filter((value, index, self) => {
             return self.indexOf(value) === index;
@@ -123,6 +125,7 @@ class DendroLib {
             let sampleDataObject = {
                 id: physicalSampleId,
                 method_id: 10,
+                biblio_ids: Array.from(biblioIds),
                 type: "dendro",
                 sample_name: "",
                 date_sampled: "",
@@ -176,7 +179,6 @@ class DendroLib {
             sampleDataObjects.push(sampleDataObject);
 
         });
-
 
         return sampleDataObjects;
     }
