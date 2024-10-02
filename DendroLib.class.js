@@ -108,15 +108,39 @@ class DendroLib {
         ];
     }
 
+    dataGroupsToSampleDataObjects(dataGroups) {
+        let sampleDataObjects = [];
+		dataGroups.forEach(dataGroup => {
+			let sampleDataObject = {
+                physical_sample_id: dataGroup.physical_sample_id,
+				sample_name: dataGroup.sample_name,
+				sampleTaken: dataGroup.date_sampled,
+				datasets: []
+			};
+
+			dataGroup.values.forEach(value => {
+				let dataset = {
+					id: value.lookupId,
+					label: value.key,
+					value: value.valueType == "complex" ? "complex" : value.value,
+					data: value.valueType == "complex" ? value.data : null
+				};
+				sampleDataObject.datasets.push(dataset);
+			});
+
+			sampleDataObjects.push(sampleDataObject);
+		});
+
+        return sampleDataObjects;
+    }
+
     dbRowsToSampleDataObjects(measurementRows, datingRows) {
         let sampleDataObjects = [];
 
         //Find unique samples
         let physicalSampleIds = [];
-        let biblioIds = new Set();
         measurementRows.forEach(row => {
             physicalSampleIds.push(row.physical_sample_id);
-            biblioIds.add(row.biblio_id);
         });
         physicalSampleIds = physicalSampleIds.filter((value, index, self) => {
             return self.indexOf(value) === index;
@@ -125,8 +149,6 @@ class DendroLib {
         physicalSampleIds.forEach(physicalSampleId => {
             let sampleDataObject = {
                 id: physicalSampleId,
-                method_id: 10,
-                biblio_ids: Array.from(biblioIds),
                 type: "dendro",
                 sample_name: "",
                 date_sampled: "",
@@ -180,6 +202,7 @@ class DendroLib {
             sampleDataObjects.push(sampleDataObject);
 
         });
+
 
         return sampleDataObjects;
     }
@@ -856,6 +879,10 @@ class DendroLib {
      * @returns 
      */
     renderDendroDatingAsString(datingObject, site = null, useTooltipMarkup = true, sqs = null) {
+        if(!datingObject) { //not sure why this would ever happen, but it does
+            console.warn("In renderDendroDatingAsString, datingObject was not provided.");
+            return "";
+        }
         let renderStr = "";
         if(useTooltipMarkup && datingObject.error_uncertainty) {
             // see site 2019 for an example of this
@@ -919,13 +946,16 @@ class DendroLib {
             renderStr += " "+datingObject.age_type;
         }
 
-        if(datingObject.dating_uncertainty) {
+        if(datingObject.dating_uncertainty && site != null) {
             //datingObject.dating_uncertainty is actually dating_uncertainty_id and needs to be looked up
             let uncert = site.lookup_tables.dating_uncertainty.find(item => item.dating_uncertainty_id === datingObject.dating_uncertainty);
 
             if(uncert != null && uncert.uncertainty == "From") {
                 renderStr = "After "+renderStr;
             }
+        }
+        else if(datingObject.dating_uncertainty) {
+            console.warn("In renderDendroDatingAsString, datingObject.dating_uncertainty was provided but no reference to site was provided.");
         }
 
         if(datingObject.minus && datingObject.plus) {
