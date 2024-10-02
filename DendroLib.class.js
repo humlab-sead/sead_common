@@ -1,5 +1,6 @@
 class DendroLib {
     constructor(attemptUncertainDatingCaculations = true, useLocalColors = true) {
+        this.version = "1.0.0";
         this.attemptUncertainDatingCaculations = attemptUncertainDatingCaculations;
         this.useLocalColors = useLocalColors;
 
@@ -247,14 +248,14 @@ class DendroLib {
             return false;
         }
 
-        let dpKey = "datasets";
+        let dpKey = "values";
         if(typeof sampleDataObject.data_points != "undefined") {
             dpKey = "data_points";
         }
 
         for(let key in sampleDataObject[dpKey]) {
-            if(sampleDataObject[dpKey][key].id == dendroLookupId) {
-                if(sampleDataObject[dpKey][key].value == "complex") {
+            if(sampleDataObject[dpKey][key].lookupId == dendroLookupId) {
+                if(sampleDataObject[dpKey][key].valueType == "complex") {
                     return sampleDataObject[dpKey][key].data;
                 }
                 return sampleDataObject[dpKey][key].value;
