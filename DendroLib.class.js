@@ -134,6 +134,136 @@ class DendroLib {
         return sampleDataObjects;
     }
 
+    newDbRowsToSampleDataObjects(rows) {
+
+        /*
+        {
+        analysis_value_id: '60454',
+        value_class_id: 14,
+        analysis_entity_id: '168165',
+        analysis_value: '1691-1731',
+        boolean_value: null,
+        is_boolean: null,
+        is_uncertain: null,
+        is_undefined: null,
+        is_not_analyzed: null,
+        is_indeterminable: null,
+        is_anomaly: null,
+        value_type_id: 11,
+        method_id: 10,
+        parent_id: null,
+        name: 'Estimated felling year',
+        description: 'The felling year as inferred from the analysed outermost tree-ring date',
+        physical_sample_id: 50436,
+        sample_name: '75680',
+        date_sampled: '2004-11-02',
+        dating_range_low_value: 1691,
+        dating_range_high_value: 1731,
+        dating_range_low_is_uncertain: false,
+        dating_range_high_is_uncertain: false,
+        dating_range_low_qualifier: null,
+        dating_range_age_type_id: 1,
+        dating_range_season_id: null,
+        dating_range_dating_uncertainty_id: null,
+        dating_range_is_variant: null
+        }
+        */
+
+        //Find unique samples
+        let physicalSampleIds = [];
+        rows.forEach(row => {
+            physicalSampleIds.push(row.physical_sample_id);
+        });
+        physicalSampleIds = physicalSampleIds.filter((value, index, self) => {
+            return self.indexOf(value) === index;
+        });
+
+        let sampleDataObjects = [];
+
+        physicalSampleIds.forEach(physicalSampleId => {
+            let sampleDataObject = {
+                id: physicalSampleId,
+                type: "dendro",
+                sample_name: "",
+                date_sampled: "",
+                physical_sample_id: physicalSampleId,
+                datasets: []
+            }
+
+            rows.forEach(m2 => {
+                if(physicalSampleId == m2.physical_sample_id) {
+                    sampleDataObject.sample_name = m2.sample_name;
+                    sampleDataObject.date_sampled = m2.date_sampled;
+
+                    if(m2.dating_range_low_value || m2.dating_range_high_value) {
+                        sampleDataObject.datasets.push({
+                            id: m2.value_class_id,
+                            valueType: "complex",
+                            label: m2.name,
+                            value: m2.analysis_value,
+                            complexValue: {
+                                dating_range_low_value: m2.dating_range_low_value,
+                                dating_range_high_value: m2.dating_range_high_value,
+                                dating_range_low_is_uncertain: m2.dating_range_low_is_uncertain,
+                                dating_range_high_is_uncertain: m2.dating_range_high_is_uncertain,
+                                dating_range_low_qualifier: m2.dating_range_low_qualifier,
+                                dating_range_age_type_id: m2.dating_range_age_type_id,
+                                dating_range_season_id: m2.dating_range_season_id,
+                                dating_range_dating_uncertainty_id: m2.dating_range_dating_uncertainty_id,
+                                dating_range_is_variant: m2.dating_range_is_variant
+                            }
+                        });
+                    }
+                    else {
+                        sampleDataObject.datasets.push({
+                            id: m2.value_class_id,
+                            valueType: "simple",
+                            label: m2.name,
+                            value: m2.analysis_value
+                        });
+                    }
+                    
+                }
+            })
+
+            /*
+            datingRows.forEach(m2 => {
+                if(physicalSampleId == m2.physical_sample_id) {
+                    sampleDataObject.datasets.push({
+                        id: m2.dendro_lookup_id,
+                        label: m2.date_type,
+                        value: "complex",
+                        data: {
+                            age_type: m2.age_type,
+                            older: m2.older,
+                            younger: m2.younger,
+                            plus: m2.plus,
+                            minus: m2.minus,
+                            dating_uncertainty: m2.dating_uncertainty_id,
+                            error_uncertainty: m2.error_uncertainty,
+                            season_id: m2.season_id,
+                            season_type_id: m2.season_type_id,
+                            season_name: m2.season_name,
+                            dating_note: m2.dating_note
+                        }
+                    });
+                }
+            });
+            */
+            
+            sampleDataObjects.push(sampleDataObject);
+        });
+
+        /*
+        sampleDataObjects.forEach(sampleDataObject => {
+            if(sampleDataObject.sample_name == "75680") {
+                console.log(sampleDataObject);
+            }
+        });
+        */
+        return sampleDataObjects;
+    }
+
     dbRowsToSampleDataObjects(measurementRows, datingRows) {
         let sampleDataObjects = [];
 
