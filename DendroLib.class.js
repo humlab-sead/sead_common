@@ -120,14 +120,18 @@ class DendroLib {
 
 			dataGroup.values.forEach(value => {
 				let dataset = {
-					id: value.lookupId,
-					label: value.key,
+					id: value.lookupId,  //legacy
+                    lookupId: value.lookupId,
+					label: value.key, //legacy
+                    key: value.key,
 					value: value.valueType == "complex" ? "complex" : value.value,
+                    valueType: value.valueType,
 					data: value.valueType == "complex" ? value.data : null
 				};
 				sampleDataObject.datasets.push(dataset);
 			});
-
+            
+            sampleDataObject.values = sampleDataObject.datasets;
 			sampleDataObjects.push(sampleDataObject);
 		});
 
