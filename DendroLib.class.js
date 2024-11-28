@@ -9,101 +9,139 @@ class DendroLib {
                 name: "Tree species", //Original (legacy name)
                 title: "Tree species", //The proper name it should be called (subject to change)
                 dendroLookupId: 121,
+                valueClassId: 1
             },
             {
                 name: "Tree rings",
                 title: "Tree rings",
-                dendroLookupId: 122
+                dendroLookupId: 122,
+                valueClassId: 2
             },
             {
                 name: "earlywood/late wood",
                 title: "earlywood/late wood",
-                dendroLookupId: 123
+                dendroLookupId: 123,
+                valueClassId: 3
             },
             {
                 name: "No. of radius ",
                 title: "No. of radius ",
-                dendroLookupId: 124
+                dendroLookupId: 124,
+                valueClassId: 4
             },
             {
                 name: "3 time series",
                 title: "3 time series",
-                dendroLookupId: 125
+                dendroLookupId: 125,
+                valueClassId: 5 //MAYBE
             },
             {
                 name: "Sapwood (Sp)",
                 title: "Sapwood (Sp)",
-                dendroLookupId: 126
+                dendroLookupId: 126,
+                valueClassId: 6
             },
             {
                 name: "Bark (B)",
                 title: "Bark (B)",
-                dendroLookupId: 127
+                dendroLookupId: 127,
+                valueClassId: 7
             },
             {
                 name: "Waney edge (W)",
                 title: "Waney edge (W)",
-                dendroLookupId: 128
+                dendroLookupId: 128,
+                valueClassId: 8
             },
             {
                 name: "Pith (P)",
                 title: "Pith (P)",
-                dendroLookupId: 129
+                dendroLookupId: 129,
+                valueClassId: 9
             },
             {
                 name: "Tree age ≥",
                 title: "Tree age ≥",
-                dendroLookupId: 130
+                dendroLookupId: 130,
+                valueClassId: 10
             },
             {
                 name: "Tree age ≤",
                 title: "Tree age ≤",
-                dendroLookupId: 131
+                dendroLookupId: 131,
+                valueClassId: 11
             },
             {
                 name: "Inferred growth year ≥",
                 title: "Inferred growth year ≥",
-                dendroLookupId: 132
+                dendroLookupId: 132,
+                valueClassId: 12
             },
             {
                 name: "Inferred growth year ≤",
                 title: "Inferred growth year ≤",
-                dendroLookupId: 133
+                dendroLookupId: 133,
+                valueClassId: 13
             },
             {
                 name: "Estimated felling year",
                 title: "Estimated felling year",
-                dendroLookupId: 134
+                dendroLookupId: 134,
+                valueClassId: 14
             },
             {
                 name: "Estimated felling year, lower accuracy",
                 title: "Estimated felling year, lower accuracy",
-                dendroLookupId: 135
+                dendroLookupId: 135,
+                valueClassId: 15
             },
             {
                 name: "Provenance",
                 title: "Provenance",
-                dendroLookupId: 136
+                dendroLookupId: 136,
+                valueClassId: 16
             },
             {
                 name: "Outermost tree-ring date",
                 title: "Outermost tree-ring date",
-                dendroLookupId: 137
+                dendroLookupId: 137,
+                valueClassId: 17
             },
             {
                 name: "Not dated",
                 title: "Not dated",
-                dendroLookupId: 138
+                dendroLookupId: 138,
+                valueClassId: 18
             },
             {
                 name: "Date note",
                 title: "Date note",
-                dendroLookupId: 139
+                dendroLookupId: 139,
+                valueClassId: 19
             },
             {
                 name: "Provenance comment",
                 title: "Provenance comment",
-                dendroLookupId: 140
+                dendroLookupId: 140,
+                valueClassId: 20
+            },
+            {
+                name: "Non-measured tree rings",
+                title: "Non-measured tree rings",
+                dendroLookupId: null,
+                valueClassId: 21
+            },
+            {
+                name: "Non-measured sapwood rings",
+                title: "Non-measured sapwood rings",
+                dendroLookupId: null,
+                valueClassId: 22
+            },
+            {
+                name: "Sapwood indicator",
+                title: "Sapwood indicator",
+                dendroLookupId: null,
+                valueClassId: 23
             },
         ];
     }
@@ -264,14 +302,15 @@ class DendroLib {
     
 
     getDendroMeasurementByName(name, sampleDataObject) {
-        let dendroLookupId = null;
+        let valueClassId = null;
         for(let key in this.translationTable) {
             if(this.translationTable[key].name == name) {
-                dendroLookupId = this.translationTable[key].dendroLookupId;
+                valueClassId = this.translationTable[key].valueClassId;
             }
         }
     
-        if(dendroLookupId == null) {
+        if(valueClassId == null) {
+            console.warn("Could not find a valueClassId for the measurement name: "+name);
             return false;
         }
 
@@ -281,7 +320,7 @@ class DendroLib {
         }
 
         for(let key in sampleDataObject[dpKey]) {
-            if(sampleDataObject[dpKey][key].lookupId == dendroLookupId) {
+            if(sampleDataObject[dpKey][key].lookupId == valueClassId) {
                 if(sampleDataObject[dpKey][key].valueType == "complex") {
                     return sampleDataObject[dpKey][key].data;
                 }
