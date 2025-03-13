@@ -1,5 +1,3 @@
-import { raw } from "file-loader";
-
 class DendroLib {
     constructor(attemptUncertainDatingCaculations = true, useLocalColors = true) {
         this.version = "2.0.0";
