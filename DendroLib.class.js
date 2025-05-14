@@ -170,7 +170,8 @@ class DendroLib {
         return sampleDataObjects;
     }
 
-    dbRowsToSampleDataObjects(rows) {
+    dbRowsToSampleDataObjectsOLD(rows) {
+        
         /*
         {
         analysis_value_id: '60454',
@@ -236,6 +237,7 @@ class DendroLib {
                             valueType: "complex",
                             label: m2.name,
                             value: m2.analysis_value,
+                            biblio_id: m2.biblio_id,
                             complexValue: {
                                 dating_range_low_value: m2.dating_range_low_value,
                                 dating_range_high_value: m2.dating_range_high_value,
@@ -254,7 +256,8 @@ class DendroLib {
                             id: m2.value_class_id,
                             valueType: "simple",
                             label: m2.name,
-                            value: m2.analysis_value
+                            value: m2.analysis_value,
+                            biblio_id: m2.biblio_id,
                         });
                     }
                     
@@ -1044,7 +1047,6 @@ class DendroLib {
     }
 
     dbRowsToSampleDataObjects(rows) {
-
         /*
         {
         analysis_value_id: '60454',
@@ -1110,6 +1112,7 @@ class DendroLib {
                             valueType: "complex",
                             label: m2.name,
                             value: m2.analysis_value,
+                            biblio_id: m2.biblio_id,
                             complexValue: {
                                 dating_range_low_value: m2.dating_range_low_value,
                                 dating_range_high_value: m2.dating_range_high_value,
@@ -1128,7 +1131,8 @@ class DendroLib {
                             id: m2.value_class_id,
                             valueType: "simple",
                             label: m2.name,
-                            value: m2.analysis_value
+                            value: m2.analysis_value,
+                            biblio_id: m2.biblio_id,
                         });
                     }
                     
